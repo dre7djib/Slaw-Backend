@@ -13,12 +13,8 @@ export class UsersService {
   ) {}
 
   createUser(createUserDto: CreateUserDto) {
-    const newUser = {
-      id: Date.now(),
-      ...createUserDto
-    }
-    this.usersRepository.save(newUser)
-    return newUser;
+    const newUser = this.usersRepository.create(createUserDto);
+    return this.usersRepository.save(newUser);
   }
 
   findAllUser() {
