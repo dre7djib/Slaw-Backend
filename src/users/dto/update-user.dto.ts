@@ -1,6 +1,6 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateUserDto } from './create-user.dto';
-import { IsInt, IsOptional, IsString, Min, MinLength } from 'class-validator';
+import { IsEmail, IsInt, IsOptional, IsString, Min, MinLength } from 'class-validator';
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {
     @IsOptional()
@@ -12,4 +12,19 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
     @IsInt()
     @Min(13,{message: 'You must be at least 13 years old'})
     age?: number;
+
+    @IsOptional()
+    isActive?: boolean;
+
+    @IsOptional()
+    @IsString()
+    @IsEmail()
+    email?: string;
+
+    @IsOptional()
+    @IsString()
+    @MinLength(8,{message: 'Password must be at least 8 characters long'})
+    password?: string;
+
+
 }

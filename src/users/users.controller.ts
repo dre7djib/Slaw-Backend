@@ -8,9 +8,9 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get(':id')
-  findOne(@Param('id',ParseIntPipe) id: number) {
+  findOne(@Param('id') userId: string) {
     try {
-      return this.usersService.findOneUser(id);
+      return this.usersService.findOneUser(userId);
     } catch (error) {
       throw new NotFoundException();
     }
@@ -27,18 +27,18 @@ export class UsersController {
   }
 
   @Patch(':id')
-  update(@Param('id',ParseIntPipe) id: number, @Body(new ValidationPipe()) updateUserDto: UpdateUserDto) {
+  update(@Param('id') userId: string, @Body(new ValidationPipe()) updateUserDto: UpdateUserDto) {
     try {
-      return this.usersService.updateUser(id, updateUserDto);
+      return this.usersService.updateUser(userId, updateUserDto);
     } catch (error) {
       throw new NotFoundException();
     }
   }
 
   @Delete(':id')
-  remove(@Param('id',ParseIntPipe) id: number) {
+  remove(@Param('id') userId: string) {
     try {
-      return this.usersService.removeUser(id);
+      return this.usersService.removeUser(userId);
     } catch (error) {
       throw new NotFoundException();
     }
