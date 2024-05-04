@@ -1,12 +1,9 @@
-import { Entity, Column, PrimaryGeneratedColumn, BeforeInsert } from 'typeorm';
-import { v4 as uuidv4 } from 'uuid';
+import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from "typeorm";
+import { clients } from "../../clients/entities/client.entity";
 
 @Entity('users')
 export class users {
-    @PrimaryGeneratedColumn('increment', { type: 'bigint' })
-    id: number;
-
-    @Column()
+    @PrimaryGeneratedColumn('uuid') 
     userId: string;
 
     @Column()
@@ -24,9 +21,6 @@ export class users {
     @Column()
     password: string;
 
-    @BeforeInsert()
-    generateCustomId() {
-      this.userId = uuidv4();
-    }
-
+    @OneToMany(() => clients, client => client.userId)
+    clients: clients[];
 }

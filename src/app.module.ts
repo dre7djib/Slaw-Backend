@@ -6,8 +6,9 @@ import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { users } from './users/entities/user.entity';
+import { clients } from './clients/entities/client.entity';
 import { env } from 'process';
-
+import { ClientsModule } from './clients/clients.module';
 
 @Module({
   imports: [
@@ -19,9 +20,10 @@ import { env } from 'process';
     username: env.DB_USER,
     password: env.DB_PASSWORD,
     database: env.DB_NAME,
-    entities: [users],
+    entities: [users, clients],
     synchronize: true,
-    })
+    }),
+    ClientsModule
   ],
   controllers: [AppController],
   providers: [AppService],

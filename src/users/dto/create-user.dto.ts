@@ -1,8 +1,6 @@
 import { IsEmail, IsInt, Min, MinLength } from "class-validator";
 
 export class CreateUserDto {
-    id: number;
-
     @MinLength(3, {message: 'Please enter a valid name with at least 3 characters'})
     name: string;
 
