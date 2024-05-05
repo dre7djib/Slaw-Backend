@@ -7,6 +7,9 @@ export class users {
     userId: string;
 
     @Column()
+    email: string;
+
+    @Column()
     name: string;
 
     @Column()
@@ -14,9 +17,6 @@ export class users {
 
     @Column({ default: true })
     isActive: boolean;
-
-    @Column()
-    email: string;
 
     @Column()
     password: string;

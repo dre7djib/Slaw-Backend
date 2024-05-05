@@ -9,10 +9,13 @@ import { users } from './users/entities/user.entity';
 import { clients } from './clients/entities/client.entity';
 import { env } from 'process';
 import { ClientsModule } from './clients/clients.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
-    UsersModule ,
+    UsersModule,
+    ClientsModule,
+    AuthModule,
     TypeOrmModule.forRoot({
     type: 'mysql',
     host: env.DB_HOST,
@@ -22,8 +25,7 @@ import { ClientsModule } from './clients/clients.module';
     database: env.DB_NAME,
     entities: [users, clients],
     synchronize: true,
-    }),
-    ClientsModule
+    })
   ],
   controllers: [AppController],
   providers: [AppService],
