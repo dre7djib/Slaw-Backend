@@ -2,6 +2,8 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, NotFoundException, V
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { BadRequestException } from '@nestjs/common';
+import { Public } from 'src/decorators/public.decorator';
 
 @Controller('users')
 export class UsersController {
@@ -21,9 +23,14 @@ export class UsersController {
     return this.usersService.findAllUser();
   }
 
+  @Public()
   @Post()
   create(@Body(new ValidationPipe()) createUserDto: CreateUserDto) {
-    return this.usersService.createUser(createUserDto)
+    try {
+      return this.usersService.createUser(createUserDto);
+    } catch (error) {
+      throw new BadRequestException("The account already exists.");
+    }
   }
 
   @Patch(':id')

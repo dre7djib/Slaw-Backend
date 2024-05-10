@@ -16,11 +16,16 @@ export class UsersService {
 
   @Public()
   async createUser(createUserDto: CreateUserDto) {
+    const exist = await this.isEmailPresent(createUserDto.email);
+    console.log(exist);
+    if(exist) {
+      throw new NotFoundException('User already exists');
+    }
     const newUser = this.usersRepository.create(createUserDto);
     const salt = 10;
     newUser.password = await bcrypt.hash(newUser.password, salt);
     return this.usersRepository.save(newUser);
-  }
+}
 
   findAllUser() {
     return this.usersRepository.find();
@@ -42,11 +47,16 @@ export class UsersService {
     return user;
   }
 
-  async updateUser(userId: string, updateUserDto: UpdateUserDto) {
-    const user = await this.findOneUser(userId);
-    const updatedUser = { ...user, ...updateUserDto };
-    return this.usersRepository.save(updatedUser);
+    async isEmailPresent(email: string): Promise<boolean> {
+      const user = await this.usersRepository.findOneBy({ email });
+      return !!user;
   }
+
+    async updateUser(userId: string, updateUserDto: UpdateUserDto) {
+      const user = await this.findOneUser(userId);
+      const updatedUser = { ...user, ...updateUserDto };
+      return this.usersRepository.save(updatedUser);
+    }
 
   async removeUser(userId: string) {
     const user = await this.findOneUser(userId);
