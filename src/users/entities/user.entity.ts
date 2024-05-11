@@ -1,12 +1,13 @@
-import { Entity, Column, PrimaryGeneratedColumn, BeforeInsert } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from "typeorm";
+import { clients } from "../../clients/entities/client.entity";
 
 @Entity('users')
 export class users {
-    @PrimaryGeneratedColumn('increment', { type: 'bigint' })
-    id: number;
+    @PrimaryGeneratedColumn('uuid') 
+    userId: string;
 
     @Column()
-    userId: string;
+    email: string;
 
     @Column()
     name: string;
@@ -18,17 +19,8 @@ export class users {
     isActive: boolean;
 
     @Column()
-    email: string;
-
-    @Column()
     password: string;
 
-    @BeforeInsert()
-    generateCustomId() {
-      // Générer un ID basé sur la date au format YYYYMMDDHHMMSSmmm
-      const currentDate = new Date();
-      const formattedDate = `${currentDate.getFullYear()}${(currentDate.getMonth() + 1).toString().padStart(2, '0')}${currentDate.getDate().toString().padStart(2, '0')}${currentDate.getHours().toString().padStart(2, '0')}${currentDate.getMinutes().toString().padStart(2, '0')}${currentDate.getSeconds().toString().padStart(2, '0')}${currentDate.getMilliseconds().toString().padStart(3, '0')}`;
-      this.userId = formattedDate;
-    }
-
+    @OneToMany(() => clients, client => client.userId)
+    clients: clients[];
 }
