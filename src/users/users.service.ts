@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { InjectRepository} from '@nestjs/typeorm';
+import { Repository, In } from 'typeorm';
 import { users } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { Public } from 'src/decorators/public.decorator';
@@ -25,7 +25,7 @@ export class UsersService {
     const salt = 10;
     newUser.password = await bcrypt.hash(newUser.password, salt);
     return this.usersRepository.save(newUser);
-}
+  }
 
   findAllUser() {
     return this.usersRepository.find();
@@ -39,24 +39,24 @@ export class UsersService {
     return user;
   }
 
-  async findUserByEmail(email: string) {
-    const user = this.usersRepository.findOneBy({ email });
+  findUserByEmail(e: string) {
+    const user = this.usersRepository.findOneBy({ email: e});
     if (!user) {
-      throw new NotFoundException('User not found');
+        throw new NotFoundException('User not found');
     }
     return user;
   }
 
-    async isEmailPresent(email: string): Promise<boolean> {
+  async isEmailPresent(email: string): Promise<boolean> {
       const user = await this.usersRepository.findOneBy({ email });
       return !!user;
   }
 
-    async updateUser(userId: string, updateUserDto: UpdateUserDto) {
-      const user = await this.findOneUser(userId);
-      const updatedUser = { ...user, ...updateUserDto };
-      return this.usersRepository.save(updatedUser);
-    }
+  async updateUser(userId: string, updateUserDto: UpdateUserDto) {
+    const user = await this.findOneUser(userId);
+    const updatedUser = { ...user, ...updateUserDto };
+    return this.usersRepository.save(updatedUser);
+  }
 
   async removeUser(userId: string) {
     const user = await this.findOneUser(userId);

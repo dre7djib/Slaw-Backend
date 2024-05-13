@@ -17,7 +17,8 @@ export class UsersController {
       throw new NotFoundException();
     }
   }
-
+  
+  @Public()
   @Get()
   findAll() {
     return this.usersService.findAllUser();
