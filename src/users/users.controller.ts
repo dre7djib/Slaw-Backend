@@ -18,9 +18,9 @@ export class UsersController {
     }
   }
   
-  @Public()
   @Get()
   findAll() {
+    console.log('findAll');
     return this.usersService.findAllUser();
   }
 
