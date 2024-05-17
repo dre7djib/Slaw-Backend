@@ -10,6 +10,7 @@ import { clients } from './clients/entities/client.entity';
 import { env } from 'process';
 import { ClientsModule } from './clients/clients.module';
 import { AuthModule } from './auth/auth.module';
+import { OpenAiModule } from './open_ai/open_ai.module';
 
 @Module({
   imports: [
@@ -25,7 +26,8 @@ import { AuthModule } from './auth/auth.module';
     database: env.DB_NAME,
     entities: [users, clients],
     synchronize: true,
-    })
+    }),
+    OpenAiModule
   ],
   controllers: [AppController],
   providers: [AppService],
