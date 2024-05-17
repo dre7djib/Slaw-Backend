@@ -15,7 +15,6 @@ export class OpenAiController {
   @Post()
   getResponse(@Body() openAiDto: OpenAIDto) {
     const a = this.openAiService.chatGpt_request(openAiDto);
-    console.log(2,a);
     return a;
   }
 
