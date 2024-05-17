@@ -17,9 +17,10 @@ export class UsersController {
       throw new NotFoundException();
     }
   }
-
+  
   @Get()
   findAll() {
+    console.log('findAll');
     return this.usersService.findAllUser();
   }
 
