@@ -27,4 +27,14 @@ export class AuthService {
       access_token: await this.jwtService.signAsync(payload),
     };
   }
+
+  verifyToken(token: string) {
+    const decoded = this.jwtService.verify(token);
+    const userId = decoded.userId; 
+
+    if (this.usersService.findOneUser(userId)) {
+      return userId;
+    }
+    return false;
+  }
 } 

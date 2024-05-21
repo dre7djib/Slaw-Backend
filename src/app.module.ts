@@ -11,6 +11,7 @@ import { env } from 'process';
 import { ClientsModule } from './clients/clients.module';
 import { AuthModule } from './auth/auth.module';
 import { OpenAiModule } from './open_ai/open_ai.module';
+import { open_ai } from './open_ai/entities/open_ai.entity';
 
 @Module({
   imports: [
@@ -24,7 +25,7 @@ import { OpenAiModule } from './open_ai/open_ai.module';
     username: env.DB_USER,
     password: env.DB_PASSWORD,
     database: env.DB_NAME,
-    entities: [users, clients],
+    entities: [users, clients, open_ai],
     synchronize: true,
     }),
     OpenAiModule
