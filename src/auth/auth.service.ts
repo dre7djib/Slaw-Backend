@@ -14,7 +14,6 @@ export class AuthService {
 
   async login(loginDto: LoginDto): Promise<{ access_token: string }> {
     const user = await this.usersService.findUserByEmail(loginDto.email);
-    console.log(user.email, loginDto.email);
     if (user.email !== loginDto.email) {
       throw new UnauthorizedException();
     }
@@ -22,9 +21,19 @@ export class AuthService {
     if (!isMatch) {
       throw new UnauthorizedException();
     }
-    const payload = { sub: user.userId, email: user.email };
+    const payload = { sub: user._id, email: user.email };
     return {
       access_token: await this.jwtService.signAsync(payload),
     };
+  }
+
+  verifyToken(token: string) {
+    const decoded = this.jwtService.verify(token);
+    const userId = decoded.userId; 
+
+    if (this.usersService.findOneUser(userId)) {
+      return userId;
+    }
+    return false;
   }
 } 
