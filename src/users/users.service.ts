@@ -1,65 +1,69 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { InjectRepository} from '@nestjs/typeorm';
-import { Repository, In } from 'typeorm';
-import { users } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { Public } from 'src/decorators/public.decorator';
+import { Users } from './schema/users.schema';
+import { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectRepository(users)
-    private usersRepository: Repository<users>,
-  ) {}
+  constructor(@InjectModel(Users.name) private usersModel: Model<Users>) {}
+  private readonly logger = new Logger(UsersService.name);
 
   @Public()
   async createUser(createUserDto: CreateUserDto) {
-    const exist = await this.isEmailPresent(createUserDto.email);
+    this.logger.log('Creating a new user');
+    /*const exist = await this.isEmailPresent(createUserDto.email);
     console.log(exist);
     if(exist) {
       throw new NotFoundException('User already exists');
-    }
-    const newUser = this.usersRepository.create(createUserDto);
+    }*/
+    const newUser = new this.usersModel(createUserDto);
     const salt = 10;
     newUser.password = await bcrypt.hash(newUser.password, salt);
-    return this.usersRepository.save(newUser);
+    return newUser.save();
   }
 
-  findAllUser() {
-    return this.usersRepository.find();
+  async findAllUser() {
+    this.logger.log('Finding all users');
+    return this.usersModel.find().exec();
   }
 
-  async findOneUser(userId: string) {
-    const user = this.usersRepository.findOneBy({ userId });
+  async findOneUser(id: string) {
+    this.logger.log('Finding one user');
+    const user = await this.usersModel.findById(id).exec();
     if (!user) {
       throw new NotFoundException('User not found');
     }
     return user;
   }
 
-  findUserByEmail(e: string) {
-    const user = this.usersRepository.findOneBy({ email: e});
+  async findUserByEmail(e: string) {
+    this.logger.log('Finding user by email');
+    const user = await this.usersModel.findOne({ email: e}).exec();
     if (!user) {
         throw new NotFoundException('User not found');
     }
     return user;
   }
 
-  async isEmailPresent(email: string): Promise<boolean> {
-      const user = await this.usersRepository.findOneBy({ email });
-      return !!user;
+  async isEmailPresent(e: string): Promise<boolean> {
+    this.logger.log('Checking if email is present');
+    const user = await this.usersModel.findOne({ email: e}).exec();
+    return !!user;
   }
 
-  async updateUser(userId: string, updateUserDto: UpdateUserDto) {
-    const user = await this.findOneUser(userId);
-    const updatedUser = { ...user, ...updateUserDto };
-    return this.usersRepository.save(updatedUser);
-  }
+  async updateUser(id: string, updateUserDto: UpdateUserDto) {
+    this.logger.log('Updating user');
+    const user = await this.usersModel.findByIdAndUpdate(id, updateUserDto, { new: true }).exec();
+    return user;
+}
 
-  async removeUser(userId: string) {
-    const user = await this.findOneUser(userId);
-    return this.usersRepository.remove(user);
+  async removeUser(id: string) {
+    this.logger.log('Removing user');
+    const user = await this.usersModel.findByIdAndDelete(id).exec();
+    return user
   }
 }
