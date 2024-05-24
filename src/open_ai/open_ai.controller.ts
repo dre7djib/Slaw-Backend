@@ -1,9 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Req } from '@nestjs/common';
+import { Controller,Post, Body} from '@nestjs/common';
 import { OpenAiService } from './open_ai.service';
 import { Public } from 'src/decorators/public.decorator';
 import OpenAIApi from 'openai';
 import { OpenAIDto } from './dto/open_ai.dto';
-import { Request } from 'express';
 
 @Controller('open-ai')
 export class OpenAiController {
@@ -17,5 +16,7 @@ export class OpenAiController {
   getResponse(@Body() openAiDto: OpenAIDto) {
     return this.openAiService.chatGpt_request(openAiDto);
   }
+
+  
 
 }

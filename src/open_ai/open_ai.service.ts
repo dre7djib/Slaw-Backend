@@ -1,6 +1,6 @@
 require('dotenv').config();
 import OpenAIApi from "openai";
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { env } from 'process';
 import { OpenAIDto } from "./dto/open_ai.dto";
 import { AuthService } from "src/auth/auth.service";
@@ -12,7 +12,10 @@ export class OpenAiService {
     private authService: AuthService,
   ) {}
 
+  private readonly logger = new Logger(OpenAiService.name);
+
   async chatGpt_request(openAIDto: OpenAIDto): Promise<any> {
+    this.logger.log('ChatGPT Request');
     const token = openAIDto.headers
     const userId = this.authService.verifyToken(token)
     if (userId === false) {
