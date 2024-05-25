@@ -1,4 +1,4 @@
 export class OpenAIDto {
     text: string;
-    headers: any;
+    thread: string;
 }
