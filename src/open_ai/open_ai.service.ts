@@ -85,9 +85,6 @@ export class OpenAiService {
     const messages = await this.openai.beta.threads.messages.list(
       run.thread_id
     );
-    for (const message of messages.data.reverse()) {
-      console.log(`${message.role} > ${message.content[0]['text'].value}`);
-    }
     return messages;
   }
 
