@@ -17,7 +17,7 @@ export class Users {
     @Prop()
     password: string;
 
-    @Prop()
+    @Prop({ required: false })
     photo: string;
 }
 
