@@ -1,27 +1,37 @@
 require('dotenv').config();
 import OpenAIApi from 'openai';
 import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { env } from 'process';
 import { OpenAIDto } from './dto/open_ai.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Thread } from './schema/threads.schema';
+import { createThreadDto } from './dto/create-open_ai.dto';
 
 @Injectable()
 export class OpenAiService {
   constructor(
     @Inject('OpenAI') private openai: OpenAIApi,
+    @InjectModel('Thread') private threadModel: Model<Thread>
   ) {}
 
   private readonly logger = new Logger(OpenAiService.name);
 
-  async chatGptRequest(openAIDto: OpenAIDto): Promise<any> {
+  async chatGptRequest(openAIDto: OpenAIDto, createThreadDto:createThreadDto): Promise<any> {
     this.logger.log('ChatGPT Request');
     try {
       const thread = await this.findThread(openAIDto.thread);
       return await this.getResponse(thread.id, openAIDto.text);
 
     } catch (error) {
-      const thread = await this.createThread();
+      const thread = await this.createThread(createThreadDto);
       return await this.getResponse(thread.id, openAIDto.text);
     }
+  }
+
+  async listThreads(user_id:string): Promise<any> {
+    this.logger.log('List Threads');
+    const threads = await this.threadModel.find({userId:user_id}).exec();
+    return threads;
   }
   
   async findThread(threadId: string): Promise<any> {
@@ -34,12 +44,16 @@ export class OpenAiService {
     }
   }
 
-  async createThread(): Promise<any> {
+  async createThread(createThreadDto:createThreadDto): Promise<any> {
+    this.logger.log('Create Thread');
     const thread = await this.openai.beta.threads.create();
+    const newThread = new this.threadModel({ userId: createThreadDto, threadId: thread.id});
+    await newThread.save();
     return thread;
   }
 
   async createThreadMessage(threadId: string, message: string): Promise<any> {
+    this.logger.log('Create Thread Message');
     const threadMessage = await this.openai.beta.threads.messages.create(
       threadId,
       { role: 'user', content: message},
@@ -50,6 +64,7 @@ export class OpenAiService {
   async deleteThread(threadId: string): Promise<any> {
     this.logger.log('Delete Thread');
     try {
+      await this.threadModel.findOneAndDelete({ threadId: threadId }).exec();
       const thread = await this.openai.beta.threads.del(threadId);
       return thread;
     } catch (error) {

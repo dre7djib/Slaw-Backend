@@ -1,9 +1,3 @@
-export class CreateOpenAIDto {
+export class createThreadDto {
     userId: string;
-
-    message: string;
-
-    response: any;
-
-    created_at: Date;
 }

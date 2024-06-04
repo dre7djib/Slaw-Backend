@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Param, Delete } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, Delete, UnauthorizedException, Req, NestMiddleware } from '@nestjs/common';
 import { OpenAiService } from './open_ai.service';
 import { OpenAIDto } from './dto/open_ai.dto';
 
@@ -8,8 +8,12 @@ export class OpenAiController {
   constructor(private readonly openAiService: OpenAiService) {}
 
   @Post('response')
-  async getResponse(@Body() openAiDto: OpenAIDto) {
-    return await this.openAiService.chatGptRequest(openAiDto);
+  async getResponse(@Body() openAiDto: OpenAIDto, @Req() req: Request){
+    const userId = req['user']?.sub;
+    if (!userId) {
+      throw new UnauthorizedException('User ID not found');
+    }
+    return await this.openAiService.chatGptRequest(openAiDto, userId);
   }
 
   @Get('thread/:id')
@@ -17,9 +21,22 @@ export class OpenAiController {
     return await this.openAiService.findThread(threadId);
   }
 
+  @Get('threads/list')
+  async listThreads(@Req() req: Request) {
+    const userId = req['user']?.sub;
+    if (!userId) {
+      throw new UnauthorizedException('User ID not found');
+    }
+    return await this.openAiService.listThreads(userId);
+  }
+
   @Post('thread')
-  async createThread() {
-    return await this.openAiService.createThread();
+  async createThread(@Req() req: Request) {
+    const userId = req['user']?.sub;
+    if (!userId) {
+      throw new UnauthorizedException('User ID not found');
+    }
+    return await this.openAiService.createThread(userId);
   }
 
   @Delete('thread/:id')
@@ -32,3 +49,4 @@ export class OpenAiController {
     return await this.openAiService.getThreadMessages(threadId);
   }
 }
+
