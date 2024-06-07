@@ -6,6 +6,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Thread } from './schema/threads.schema';
 import { createThreadDto } from './dto/create-open_ai.dto';
+import { UpdateThreadDto } from './dto/update-open_ai.dto';
 
 @Injectable()
 export class OpenAiService {
@@ -47,9 +48,23 @@ export class OpenAiService {
   async createThread(createThreadDto:createThreadDto): Promise<any> {
     this.logger.log('Create Thread');
     const thread = await this.openai.beta.threads.create();
-    const newThread = new this.threadModel({ userId: createThreadDto, threadId: thread.id});
+    const newThread = new this.threadModel({ userId: createThreadDto, threadId: thread.id, name: 'Slaw', created: new Date()});
     await newThread.save();
     return thread;
+  }
+
+  async updateThread(threadId: string, updateThreadDto: UpdateThreadDto): Promise<any> {
+    this.logger.log('Update Thread');
+    try {
+      const thread = await this.threadModel.findOneAndUpdate(
+        { threadId: threadId },
+        updateThreadDto,
+        { new: true }
+      );
+      return thread;
+    } catch (error) {
+      throw new NotFoundException(`Could not update thread with ID ${threadId}`);
+    }
   }
 
   async createThreadMessage(threadId: string, message: string): Promise<any> {

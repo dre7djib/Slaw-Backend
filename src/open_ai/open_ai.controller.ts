@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Param, Delete, UnauthorizedException, Req, NestMiddleware } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, Delete, UnauthorizedException, Req, Put } from '@nestjs/common';
 import { OpenAiService } from './open_ai.service';
 import { OpenAIDto } from './dto/open_ai.dto';
 
@@ -37,6 +37,11 @@ export class OpenAiController {
       throw new UnauthorizedException('User ID not found');
     }
     return await this.openAiService.createThread(userId);
+  }
+
+  @Put('thread/:id')
+  async updateThread(@Param('id') threadId: string, @Body() updateThreadDto) {
+    return await this.openAiService.updateThread(threadId, updateThreadDto);
   }
 
   @Delete('thread/:id')

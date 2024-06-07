@@ -10,6 +10,12 @@ export class Thread {
 
     @Prop()
     threadId: string;
+
+    @Prop()
+    name: string;
+
+    @Prop()
+    created: Date;
 }
 
 export const ThreadSchema = SchemaFactory.createForClass(Thread);
