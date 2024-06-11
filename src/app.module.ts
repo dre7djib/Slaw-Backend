@@ -11,7 +11,7 @@ import { MongooseModule } from '@nestjs/mongoose';
   imports: [
     UsersModule,
     AuthModule,
-    MongooseModule.forRoot('mongodb://localhost/slaw'),
+    MongooseModule.forRoot(process.env.MONGO_URL),
     OpenAiModule
   ],
   controllers: [AppController],
